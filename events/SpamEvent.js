@@ -23,21 +23,19 @@ module.exports = {
         let sends = userData.get(content) || [];
         sends = sends.filter(s => now - s.timestamp < 300000);
 
+        const oldUniqueChannels = new Set(sends.map(s => s.channelId));
+
         sends.push({ channelId, timestamp: now, messageId });
 
         userData.set(content, sends);
 
         const uniqueChannels = new Set(sends.map(s => s.channelId));
 
-        if (uniqueChannels.size >= 3) { 
+        if (oldUniqueChannels.size < 8 && uniqueChannels.size >= 8) { 
             try {
                 const member = await message.guild.members.fetch(userId);
                 if (member) {
-                    try{
-                        await member.timeout(25200000, 'suspected spam');
-                    } catch (error) {
                         await member.timeout(3600000, 'suspected spam');
-                    }
                 }
             } catch (error) {
                 console.error(`Failed to timeout user ${userId}:`, error);
@@ -92,7 +90,7 @@ module.exports = {
             if (message.attachments.size > 0) {
                 files = message.attachments.map(att => ({ attachment: att.url, name: att.name }));
             }
-            await reportChannel.send({ content:'<@630070645874622494> <@282288494641020928>', embeds: [embed], components: [row], files });
+            await reportChannel.send({ content:`User Identified: <@${userId}> <@630070645874622494> <@282288494641020928>`, embeds: [embed], components: [row], files });
             userData.delete(content);
         }
     },
