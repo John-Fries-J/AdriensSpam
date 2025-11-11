@@ -33,7 +33,11 @@ module.exports = {
             try {
                 const member = await message.guild.members.fetch(userId);
                 if (member) {
-                    await member.timeout(3600000, 'suspected spam');
+                    try{
+                        await member.timeout(25200000, 'suspected spam');
+                    } catch (error) {
+                        await member.timeout(3600000, 'suspected spam');
+                    }
                 }
             } catch (error) {
                 console.error(`Failed to timeout user ${userId}:`, error);
@@ -88,7 +92,7 @@ module.exports = {
             if (message.attachments.size > 0) {
                 files = message.attachments.map(att => ({ attachment: att.url, name: att.name }));
             }
-            await reportChannel.send({ content:'<@&1356032263787249876>', embeds: [embed], components: [row], files });
+            await reportChannel.send({ content:'<@630070645874622494> <@282288494641020928>', embeds: [embed], components: [row], files });
             userData.delete(content);
         }
     },
