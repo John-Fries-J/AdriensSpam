@@ -20,14 +20,14 @@ module.exports = {
         }
 
         const userData = userMessages.get(userId);
-        let sends = userData.get(content) || [];
-        sends = sends.filter(s => now - s.timestamp < 300000);
+
+        let sends = userData.get('__any__') || [];
+        sends = sends.filter(s => now - s.timestamp < 300000);   
 
         const oldUniqueChannels = new Set(sends.map(s => s.channelId));
 
         sends.push({ channelId, timestamp: now, messageId });
-
-        userData.set(content, sends);
+        userData.set('__any__', sends);
 
         const uniqueChannels = new Set(sends.map(s => s.channelId));
 
@@ -92,6 +92,7 @@ module.exports = {
             }
             await reportChannel.send({ content:`User Identified: <@${userId}> <@630070645874622494> <@282288494641020928>`, embeds: [embed], components: [row], files });
             userData.delete(content);
+            userData.delete('__any__');
         }
     },
 };
